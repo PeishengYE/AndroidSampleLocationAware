@@ -30,11 +30,13 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -42,13 +44,18 @@ import android.widget.Toast;
 
 import com.example.android.location.R;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
 public class LocationActivity extends FragmentActivity {
+    private static final String TAG = LocationActivity.class.getSimpleName();
     private TextView mLatLng;
     private TextView mAddress;
+    private TextView mHistoryInfo;
     private Button mFineProviderButton;
     private Button mBothProviderButton;
     private LocationManager mLocationManager;
@@ -67,8 +74,14 @@ public class LocationActivity extends FragmentActivity {
     private static final int TEN_SECONDS = 10000;
     private static final int TEN_METERS = 10;
     private static final int TWO_MINUTES = 1000 * 60 * 2;
+    private final String LOCATION_SAVING_FILE = "address.all";
+    private StringBuilder stringBuilder = null;
 
-    /**
+    private double PRIMONIC_LATITUDE =45.4222399;
+    private double PRIMONIC_LONGTITUDE = -73.91762163;
+    private double distance = 0;
+
+       /**
      * This sample demonstrates how to incorporate location based services in your app and
      * process location updates.  The app also shows how to convert lat/long coordinates to
      * human-readable addresses.
@@ -78,6 +91,7 @@ public class LocationActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        stringBuilder = new StringBuilder();
 
         // Restore apps state (if exists) after rotation.
         if (savedInstanceState != null) {
@@ -88,7 +102,8 @@ public class LocationActivity extends FragmentActivity {
             mUseBoth = false;
         }
         mLatLng = (TextView) findViewById(R.id.latlng);
-        mAddress = (TextView) findViewById(R.id.address);
+        mAddress = (TextView) findViewById(R.id.label_address);
+        mHistoryInfo = (TextView) findViewById(R.id.historyInfo);
         // Receive location updates from the fine location provider (gps) only.
         mFineProviderButton = (Button) findViewById(R.id.provider_fine);
         // Receive location updates from both the fine (gps) and coarse (network) location
@@ -108,6 +123,7 @@ public class LocationActivity extends FragmentActivity {
                         break;
                     case UPDATE_LATLNG:
                         mLatLng.setText((String) msg.obj);
+                        updateHistoryInfo((String) msg.obj);
                         break;
                 }
             }
@@ -160,7 +176,13 @@ public class LocationActivity extends FragmentActivity {
     @Override
     protected void onStop() {
         super.onStop();
+       // mLocationManager.removeUpdates(listener);
+    }
+
+    @Override
+    protected void onDestroy() {
         mLocationManager.removeUpdates(listener);
+        super.onDestroy();
     }
 
     // Set up fine and/or coarse location providers depending on whether the fine provider or
@@ -245,12 +267,20 @@ public class LocationActivity extends FragmentActivity {
     }
 
     private void updateUILocation(Location location) {
+        float[] results = new float[1];
+
+        Location.distanceBetween(PRIMONIC_LATITUDE, PRIMONIC_LONGTITUDE,location.getLatitude(), location.getLongitude(), results );
+        System.out.println("Distance is: " + results[0]);
+        distance = results[0];
+        String tmpLocation = location.getLatitude() + ", " + location.getLongitude() + ", " + distance;
         // We're sending the update to a handler which then updates the UI with the new
         // location.
         Message.obtain(mHandler,
-                UPDATE_LATLNG,
-                location.getLatitude() + ", " + location.getLongitude()).sendToTarget();
+                UPDATE_LATLNG,tmpLocation
+                ).sendToTarget();
 
+        Log.d(TAG, "updateUILocation() >> get current location: " + tmpLocation);
+        saveLocations(location);
         // Bypass reverse-geocoding only if the Geocoder service is available on the device.
         if (mGeocoderAvailable) doReverseGeocoding(location);
     }
@@ -392,4 +422,40 @@ public class LocationActivity extends FragmentActivity {
                     .create();
         }
     }
+
+
+private boolean saveLocations(Location location){
+    Boolean ret = false;
+	FileOutputStream outputStream;
+	StringBuilder tmp = new StringBuilder();
+    tmp.append(location.getLatitude() + ", " + location.getLongitude());
+	try {
+	  outputStream = openFileOutput(LOCATION_SAVING_FILE, Context.MODE_APPEND);
+	  outputStream.write(tmp.toString().getBytes());
+	  outputStream.close();
+        ret = true;
+	} catch (Exception e) {
+	  e.printStackTrace();
+	}
+    return ret;
+}
+
+   public boolean isExternalStorageWritable() {
+    String state = Environment.getExternalStorageState();
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+        return true;
+    }
+    return false;
+}
+
+    private void updateHistoryInfo(String info){
+        String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(Calendar.getInstance().getTime());
+        stringBuilder.append(info);
+        stringBuilder.append(": ");
+        stringBuilder.append(formattedDate);
+        stringBuilder.append("\n");
+        mHistoryInfo.setText(stringBuilder.toString());
+    }
+
+
 }
