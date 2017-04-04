@@ -33,11 +33,13 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,7 +71,7 @@ public class LocationActivity extends FragmentActivity {
     private static final String KEY_BOTH = "use_both";
     // UI handler codes.
     private static final int UPDATE_ADDRESS = 1;
-    private static final int UPDATE_LATLNG = 2;
+    private static final int UPDATE_HISTORY_INFO = 2;
 
     private static final int TEN_SECONDS = 10000;
     private static final int TEN_METERS = 10;
@@ -79,7 +81,7 @@ public class LocationActivity extends FragmentActivity {
 
     private double PRIMONIC_LATITUDE =45.4222399;
     private double PRIMONIC_LONGTITUDE = -73.91762163;
-    private double distance = 0;
+    private int distance = 0;
 
        /**
      * This sample demonstrates how to incorporate location based services in your app and
@@ -91,6 +93,7 @@ public class LocationActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         stringBuilder = new StringBuilder();
 
         // Restore apps state (if exists) after rotation.
@@ -121,7 +124,7 @@ public class LocationActivity extends FragmentActivity {
                     case UPDATE_ADDRESS:
                         mAddress.setText((String) msg.obj);
                         break;
-                    case UPDATE_LATLNG:
+                    case UPDATE_HISTORY_INFO:
                         mLatLng.setText((String) msg.obj);
                         updateHistoryInfo((String) msg.obj);
                         break;
@@ -266,23 +269,38 @@ public class LocationActivity extends FragmentActivity {
         (new ReverseGeocodingTask(this)).execute(new Location[] {location});
     }
 
+    private void vibrating(String text){
+        long[] pattern = MorseCodeConverter.pattern(text);
+
+        // Start the vibration
+        Vibrator vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(pattern, -1);
+
+    }
+
     private void updateUILocation(Location location) {
         float[] results = new float[1];
 
         Location.distanceBetween(PRIMONIC_LATITUDE, PRIMONIC_LONGTITUDE,location.getLatitude(), location.getLongitude(), results );
         System.out.println("Distance is: " + results[0]);
-        distance = results[0];
-        String tmpLocation = location.getLatitude() + ", " + location.getLongitude() + ", " + distance;
+        distance = Math.round(results[0]);
+
+        if(distance < 2000){
+            vibrating("abcd");
+        }
+
+       // String tmpLocation = location.getLatitude() + ", " + location.getLongitude() + ", " + distance;
+        String tmpLocation = "Distance to Primonic: " + distance;
         // We're sending the update to a handler which then updates the UI with the new
         // location.
         Message.obtain(mHandler,
-                UPDATE_LATLNG,tmpLocation
+                UPDATE_HISTORY_INFO,tmpLocation
                 ).sendToTarget();
 
         Log.d(TAG, "updateUILocation() >> get current location: " + tmpLocation);
         saveLocations(location);
         // Bypass reverse-geocoding only if the Geocoder service is available on the device.
-        if (mGeocoderAvailable) doReverseGeocoding(location);
+//        if (mGeocoderAvailable) doReverseGeocoding(location);
     }
 
     private final LocationListener listener = new LocationListener() {
