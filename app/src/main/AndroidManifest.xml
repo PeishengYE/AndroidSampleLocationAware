@@ -25,8 +25,9 @@
          This permission implies access coarse location. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-    <application android:label="@string/app_name" >
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <application android:label="@string/app_name"
+        android:icon="@mipmap/ic_launcher">
         <activity android:name="com.radioyps.locationaware.LocationActivity"
             android:label="@string/app_name" >
             <intent-filter>
