@@ -16,12 +16,14 @@
 
 package com.radioyps.locationaware;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -35,8 +37,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -82,7 +86,7 @@ public class LocationActivity extends FragmentActivity {
     private double PRIMONIC_LATITUDE =45.4222399;
     private double PRIMONIC_LONGTITUDE = -73.91762163;
     private int distance = 0;
-
+    private  static  final  int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0x12;
        /**
      * This sample demonstrates how to incorporate location based services in your app and
      * process location updates.  The app also shows how to convert lat/long coordinates to
@@ -117,6 +121,32 @@ public class LocationActivity extends FragmentActivity {
         mGeocoderAvailable =
                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && Geocoder.isPresent();
 
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+            } else {
+
+                // No explanation needed, we can request the permission.
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                // MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        }
+
         // Handler for updating text fields on the UI like the lat/long and address.
         mHandler = new Handler() {
             public void handleMessage(Message msg) {
@@ -134,6 +164,7 @@ public class LocationActivity extends FragmentActivity {
         // Get a reference to the LocationManager object.
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
     }
+
 
     // Restores UI states after rotation.
     @Override
@@ -227,6 +258,11 @@ public class LocationActivity extends FragmentActivity {
         }
     }
 
+
+    private void checkPermissionYep(){
+        // Here, thisActivity is the current activity
+
+    }
     /**
      * Method to register location updates with a desired location provider.  If the requested
      * provider is not available on the device, the app displays a Toast with a message referenced
