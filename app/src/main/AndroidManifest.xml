@@ -27,7 +27,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <application android:label="@string/app_name"
+        android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher">
+
         <activity android:name="com.radioyps.locationaware.LocationActivity"
             android:label="@string/app_name" >
             <intent-filter>
@@ -35,5 +37,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.radioyps.locationaware.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="com.radioyps.locationaware.LocationActivity"
+            android:theme="@style/SettingsTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.radioyps.locationaware.LocationActivity" />
+        </activity>
+
     </application>
 </manifest>
