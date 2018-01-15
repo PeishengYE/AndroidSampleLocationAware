@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <EditTextPreference
-        android:title="@string/pref_location_label"
-        android:key="@string/pref_location_key"
-        android:defaultValue="@string/pref_location_default"
-        android:inputType="text"
+        android:title="@string/pref_location_1_longitude_label"
+        android:key="@string/pref_location_1_longitude_key"
+        android:defaultValue="@string/pref_location_longitude_primonics"
+        android:inputType="numberDecimal"
         android:singleLine="true" />
 
+    <EditTextPreference
+        android:title="@string/pref_location_1_latitude_label"
+        android:key="@string/pref_location_1_latitude_key"
+        android:defaultValue="@string/pref_location_latitude_primonics"
+        android:inputType="numberDecimal"
+        android:singleLine="true" />
+
+    <EditTextPreference
+        android:title="@string/pref_location_2_longitude_label"
+        android:key="@string/pref_location_2_longitude_key"
+        android:defaultValue="@string/pref_location_longitude_vendome"
+        android:inputType="numberDecimal"
+        android:singleLine="true" />
+
+    <EditTextPreference
+        android:title="@string/pref_location_2_latitude_label"
+        android:key="@string/pref_location_2_latitude_key"
+        android:defaultValue="@string/pref_location_latitude_vendome"
+        android:inputType="numberDecimal"
+        android:singleLine="true" />
 
 </PreferenceScreen>

@@ -25,9 +25,24 @@
     <string name="not_support_network">Network provider not supported</string>
     <string name="use_fine_provider">Fine-grain provider</string>
     <string name="use_both_providers">Both providers</string>
-    <string name="pref_location_label">Location Setting</string>
-    <string name="pref_location_key">pref_location_key</string>
-    <string name="pref_location_default">pref_location_default</string>
+
+    <string name="pref_location_1_longitude_label">Location primonics longitude Setting</string>
+    <string name="pref_location_1_longitude_key">longitude_1</string>
+    <string name="pref_location_longitude_primonics">-73.91762163</string>
+
+    <string name="pref_location_1_latitude_label">Location primonics latitude Setting</string>
+    <string name="pref_location_1_latitude_key">latitude_1</string>
+    <string name="pref_location_latitude_primonics">45.4222399</string>
+
+
+    <string name="pref_location_2_longitude_label">Location vendome longitude Setting</string>
+    <string name="pref_location_2_longitude_key">longitude_2</string>
+    <string name="pref_location_longitude_vendome">-73.603663</string>
+
+    <string name="pref_location_2_latitude_label">Location vendome latitude Setting</string>
+    <string name="pref_location_2_latitude_key">latitude_2</string>
+    <string name="pref_location_latitude_vendome">45.474996</string>
+
     <string name="action_settings">location setting</string>
     <string name="title_activity_settings">location setting</string>
 </resources>
