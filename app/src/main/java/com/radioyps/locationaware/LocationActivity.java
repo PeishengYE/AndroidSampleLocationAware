@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -36,6 +37,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
@@ -88,8 +90,9 @@ public class LocationActivity extends AppCompatActivity {
     private final String LOCATION_SAVING_FILE = "address.all";
     private StringBuilder stringBuilder = null;
 
-    private double PRIMONIC_LATITUDE =45.4222399;
-    private double PRIMONIC_LONGTITUDE = -73.91762163;
+
+    private double mLocationLatitude =45.4222399;
+    private double mLocationLongtitude = -73.91762163;
     private int distance = 0;
     private  static  final  int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0x12;
        /**
@@ -121,6 +124,9 @@ public class LocationActivity extends AppCompatActivity {
         // Receive location updates from both the fine (gps) and coarse (network) location
         // providers.
         mBothProviderButton = (Button) findViewById(R.id.provider_both);
+
+        mLocationLatitude = getPreferredLocationlatitude(this);
+        mLocationLongtitude = getPreferredLocationLongitude(this);
 
         // The isPresent() helper method is only available on Gingerbread or above.
         mGeocoderAvailable =
@@ -205,6 +211,8 @@ public class LocationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        mLocationLatitude = getPreferredLocationlatitude(this);
+        mLocationLongtitude = getPreferredLocationLongitude(this);
         setup();
     }
 
@@ -287,10 +295,7 @@ public class LocationActivity extends AppCompatActivity {
     }
 
 
-    private void checkPermissionYep(){
-        // Here, thisActivity is the current activity
 
-    }
     /**
      * Method to register location updates with a desired location provider.  If the requested
      * provider is not available on the device, the app displays a Toast with a message referenced
@@ -345,7 +350,7 @@ public class LocationActivity extends AppCompatActivity {
     private void updateUILocation(Location location) {
         float[] results = new float[1];
 
-        Location.distanceBetween(PRIMONIC_LATITUDE, PRIMONIC_LONGTITUDE,location.getLatitude(), location.getLongitude(), results );
+        Location.distanceBetween(mLocationLongtitude, mLocationLatitude,location.getLatitude(), location.getLongitude(), results );
         System.out.println("Distance is: " + results[0]);
         distance = Math.round(results[0]);
 
@@ -539,5 +544,18 @@ private boolean saveLocations(Location location){
         mHistoryInfo.setText(stringBuilder.toString());
     }
 
+    public static double getPreferredLocationLongitude(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String tmp = prefs.getString(context.getString(R.string.pref_location_1_longitude_key),
+                context.getString(R.string.pref_location_longitude_primonics));
+        return Double.parseDouble(tmp);
+    }
 
+
+    public static double getPreferredLocationlatitude(Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String tmp = prefs.getString(context.getString(R.string.pref_location_1_latitude_key),
+                context.getString(R.string.pref_location_latitude_primonics));
+        return Double.parseDouble(tmp);
+    }
 }
