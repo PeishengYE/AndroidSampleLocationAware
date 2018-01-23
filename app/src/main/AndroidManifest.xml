@@ -26,10 +26,22 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true"/>
     <application android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/ic_launcher">
 
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAxWcqYgC2C5H2lpr9aBEBnwbjvpc1HvxU"/>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <activity android:name="com.radioyps.locationaware.LocationActivity"
             android:label="@string/app_name" >
             <intent-filter>
