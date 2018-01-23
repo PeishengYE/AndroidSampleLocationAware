@@ -56,6 +56,12 @@ import android.widget.Toast;
 
 
 import com.example.android.location.R;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -64,7 +70,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
-public class LocationActivity extends AppCompatActivity {
+public class LocationActivity extends AppCompatActivity implements OnMapReadyCallback{
     private static final String TAG = LocationActivity.class.getSimpleName();
     private TextView mLatLng;
     private TextView mAddress;
@@ -174,8 +180,23 @@ public class LocationActivity extends AppCompatActivity {
         };
         // Get a reference to the LocationManager object.
         mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        // Get the SupportMapFragment and request notification
+        // when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map_fragment_container);
+        mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+
+        // and move the map's camera to the same location.
+        LatLng sydney = new LatLng(mLocationLatitude, mLocationLongtitude);
+        googleMap.addMarker(new MarkerOptions().position(sydney)
+                .title("Marker Primonics"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
