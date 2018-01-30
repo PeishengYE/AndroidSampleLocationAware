@@ -54,11 +54,11 @@
         android:text="@string/address" />
 
 <fragment
-        android:name="com.google.android.gms.maps.MapFragment"
+    class="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/map_fragment_container"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+
     tools:context="com.radioyps.locationaware.LocationActivity"/>
 
 
